@@ -217,6 +217,44 @@ def balance_new_tracks(mus):
     return new_inst_nos, n_new
 
 
+def music_to_proll(mus, return_nz=True):
+    mus_piano = muspy.to_pianoroll_representation(mus)
+    ind_nz = np.nonzero(mus_piano)
+    if return_nz:
+        mus_piano = mus_piano[ind_nz[0][0]:ind_nz[0][-1]+1,23:107]
+    else:
+        mus_piano = mus_piano[:,23:107]
+    try:
+        ind_nz[0][0]
+    except:
+        pdb.set_trace()
+    return mus_piano, (ind_nz[0][0],ind_nz[0][-1]+1)
+
+
+def mus_to_8track_array(mus,track_pos):
+    assert mus.resolution==24
+    assert len(track_pos)==len(mus)
+    
+    full_proll, inds_mus = music_to_proll(mus)
+    mus_len = full_proll.shape[0]
+    track_rolls = np.zeros((mus_len, 84, 8))
+    
+    for track, pos in zip(mus,track_pos):
+        mus_track = muspy.Music(tracks=[track])
+        track_proll, _ = music_to_proll(mus_track,return_nz=False)
+        track_proll = track_proll[inds_mus[0]:inds_mus[1],:]
+        
+        if track_proll.shape[0] < mus_len:
+            track_proll = np.pad(track_proll, ((0,mus_len-track_proll.shape[0]), (0,0)) )
+        track_rolls[:,:,pos] += track_proll
+        
+    rem_size = mus_len%(4*96)
+    if rem_size != 0:
+        track_rolls = track_rolls[:-rem_size,:,:]
+    
+    return track_rolls.reshape((-1,4,96,84,8))
+
+
 if __name__ == '__main__':
     fpath = 'scottish-midi/'
     file_list = os.listdir(fpath)
