@@ -1,0 +1,3 @@
+[submodule "bmusegan"]
+	path = bmusegan
+	url = https://github.com/salu133445/bmusegan.git
