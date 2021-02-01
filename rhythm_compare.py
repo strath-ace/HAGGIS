@@ -10,7 +10,8 @@ def dotted_rhythms_8track(mus_proll):
     dot_beats = np.zeros(n_beat).astype(bool)
     for t in range(8):
         track_test = mus_proll[:,:,t]
-        for i,b in enumerate(trange(0,track_test.shape[0]-23,24)):
+#         for i,b in enumerate(trange(0,track_test.shape[0]-23,24)):
+        for i,b in enumerate(range(0,track_test.shape[0]-23,24)):
             if dot_beats[i]:
                 continue
             mus_beat = track_test[b:b+24,:]
@@ -31,6 +32,14 @@ db_theirs = dotted_rhythms_8track(their_data)
 print('Their data:')
 print(float(len(np.where(db_theirs)[0]))/float(len(db_theirs)))
 
+db_samp = []
+for d in tqdm(their_data):
+    db_i = dotted_rhythms_8track(d)
+    db_samp.append(float(len(np.where(db_i)[0]))/float(len(db_i)))
+
+print('Median theirs:')
+print(np.median(db_samp))
+
 del(their_data)
 
 print('Loading data...')
@@ -41,3 +50,11 @@ db_ours = dotted_rhythms_8track(our_data)
 
 print('Our data:')
 print(float(len(np.where(db_ours)[0]))/float(len(db_ours)))
+
+db_samp = []
+for d in tqdm(our_data):
+    db_i = dotted_rhythms_8track(d)
+    db_samp.append(float(len(np.where(db_i)[0]))/float(len(db_i)))
+
+print('Median ours:')
+print(np.median(db_samp))

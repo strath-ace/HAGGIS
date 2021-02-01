@@ -37,6 +37,10 @@ print(np.mean(all_pent_props))
 print('Mean pentatonic ratio theirs new:')
 print(float(np.sum(np.array(all_pent_props)*np.array(all_count_props)))/float(np.sum(all_count_props)))
 
+print('')
+print('Median theirs:')
+print( np.median( np.array(all_pent_props) ) )
+
 counts, bins = np.histogram(all_pent_props,bins=20,range=(0,1))
 fig = plt.figure()
 h = plt.hist(bins[:-1], bins, weights=counts/np.sum(counts))
@@ -70,6 +74,10 @@ print('Mean pentatonic ratio ours:')
 print(np.mean(all_pent_props))
 print('Mean pentatonic ratio ours new:')
 print(float(np.sum(np.array(all_pent_props)*np.array(all_count_props)))/float(np.sum(all_count_props)))
+
+print('')
+print('Median ours:')
+print( np.median( np.array(all_pent_props) ) )
 
 counts, bins = np.histogram(all_pent_props,bins=20,range=(0,1))
 fig = plt.figure()
