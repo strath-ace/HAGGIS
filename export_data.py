@@ -1,14 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+# ------ Copyright (C) 2021 University of Strathclyde and Author ------
+# ---------------------- Author: Callum Wilson ------------------------
+# --------------- e-mail: callum.j.wilson@strath.ac.uk ----------------
+
 import muspy
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from tqdm import tqdm, trange
 import os
-import pdb
 
 inst_data = ['piano']*8 + ['perc']*8 + ['organ']*8 + ['guitar']*8 + ['bass']*8 + ['strings']*8 + ['ensemble']*8 + ['brass']*8 + ['reed']*8 + ['pipe']*8 + ['synth_lead']*8 + ['synth_pad']*8 + ['synth_eff']*8 + ['ethnic']*8 + ['percussive']*8 + ['sound_eff']*8
 
 def describe_data(mus):
+    """Returns various characteristics of a music object from a single file"""
     title = mus.metadata.source_filename[:-4]
     mus = mus.adjust_resolution(target=24)
     n_track = len(mus)
@@ -37,6 +44,7 @@ def describe_data(mus):
 
 
 def describe_tracks(mus):
+    """Returns a dictionary of characteristics of each track of a music object from a single file"""
     t_data = {'min_note':[], 'max_note':[], 'mean_note':[], 'n_note':[], 'poly_ratio':[], 'min_dur':[], 'max_dur':[], 'mean_dur':[], 'program':[], 'inst':[], 'new_inst':[]}
     for t in mus:
         t_piano = muspy.to_pianoroll_representation(muspy.Music(tracks=[t]))
@@ -68,6 +76,22 @@ def describe_tracks(mus):
 
 
 def balance_new_tracks(mus):
+    """
+    Apply heuristics to tracks in mus to assign new tracks
+    ...
+
+    Parameters
+    ----------
+    mus : muspy.Music
+     Music to be converted
+
+    Returns
+    -------
+    new_inst_nos : list
+        For each track in mus, the corresponding new track to which it is assigned
+    n_new : list
+        Number of old tracks in each of the 8 new tracks
+    """
     new_inst_nos = []
     for t in mus:
         if t.is_drum:
@@ -77,6 +101,7 @@ def balance_new_tracks(mus):
     new_inst_nos = np.array(new_inst_nos)
     
     def get_n_new():
+        """Number of old tracks in each new track"""
         n_new = []
         for i in range(8):
             n_new.append(len(np.where(new_inst_nos==i)[0]))
@@ -218,20 +243,52 @@ def balance_new_tracks(mus):
 
 
 def music_to_proll(mus, return_nz=True):
+    """
+    Convert music object to pianoroll format and return pianoroll and nonzero index range
+    ...
+    
+    Parameters
+    ----------
+    mus : muspy.Music
+        Music to be converted
+    return_nz : bool, optional
+        Whether to crop the pianoroll to nonzero content (default True)
+        
+    Returns
+    -------
+    
+    mus_piano : array
+        Pianoroll format music
+    nonzero indices : tuple
+        First and last location of nonzero indices in converted array before cropping
+    """
     mus_piano = muspy.to_pianoroll_representation(mus)
     ind_nz = np.nonzero(mus_piano)
     if return_nz:
         mus_piano = mus_piano[ind_nz[0][0]:ind_nz[0][-1]+1,23:107]
     else:
         mus_piano = mus_piano[:,23:107]
-    try:
-        ind_nz[0][0]
-    except:
-        pdb.set_trace()
     return mus_piano, (ind_nz[0][0],ind_nz[0][-1]+1)
 
 
 def mus_to_8track_array(mus,track_pos):
+    """
+    Convert music object to array of shape (-1,4,96,84,8)
+    ...
+    
+    Parameters
+    ----------
+    mus : muspy.Music
+        Music to be converted
+    track_pos : list of int (0-7)
+        Position of each mus track in the output array
+        
+    Returns
+    -------
+    
+    track_rolls : array
+        Array of 4 bar samples from mus in 8 tracks
+    """
     assert mus.resolution==24
     assert len(track_pos)==len(mus)
     
@@ -256,6 +313,7 @@ def mus_to_8track_array(mus,track_pos):
 
 
 if __name__ == '__main__':
+    """Import all data, determine valid files for converting, and convert valid files"""
     fpath = 'scottish-midi/'
     file_list = os.listdir(fpath)
     all_data = []
