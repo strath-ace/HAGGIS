@@ -4,6 +4,7 @@
 # ------ Copyright (C) 2021 University of Strathclyde and Author ------
 # ---------------------- Author: Callum Wilson ------------------------
 # --------------- e-mail: callum.j.wilson@strath.ac.uk ----------------
+"""Convert and export scottish-midi files into format for training"""
 
 import muspy
 import numpy as np
@@ -341,7 +342,7 @@ if __name__ == '__main__':
     all_titles = mus_valid.loc[:,'title'].values
     
     all_data_arr = np.empty((0,4,96,84,8))
-    print('Converting {} files to arrays'.format(len(mus_valid)))
+    print('Converting {} files to arrays...'.format(len(mus_valid)))
     for title in tqdm(all_titles):
         fname = title + '.mid'
         mus = muspy.read_midi(fpath+fname)
@@ -351,4 +352,5 @@ if __name__ == '__main__':
 
         all_data_arr = np.append(all_data_arr, mus_arr.astype(bool), axis=0)
         
+    print('Saving array...')
     np.save('conv-scottish-midi-data0',all_data_arr)
