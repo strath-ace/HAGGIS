@@ -42,6 +42,18 @@ def describe_data(mus):
     tempo = mus.tempos[0].qpm
     return title, n_track, note_min, note_max, mus_nz.shape[0], inst_nos, inst_names, n_drum, t_sig, tempo
 
+track_inst = ['Drums', 'Piano', 'Guitar', 'Bass', 'Strings', 'Wind', 'Accordion', 'Harp']
+track_convert = {-1:0, 0:0, 1:1, 2:1, 3:1, 5:1, 6:1, 8:1, 
+                 11:7, 14:7, 15:7, 16:7, 
+                 22:6, 23:6, 24:6, 
+                 25:2, 26:2, 31:2, 
+                 33:3, 34:3, 36:3, 37:3, 
+                 41:4, 42:4, 43:3, 47:7, 49:4, 51:4, 
+                 57:5, 58:5, 59:5, 62:5, 66:5, 67:5, 68:5, 69:5, 71:5, 72:5, 73:5, 74:5, 75:5, 76:5, 77:5, 80:5,
+                 89:7, 95:7, 
+                 106:2, 110:5, 111:4, 112:5}
+def f_track_converter():
+    return track_inst, track_convert
 
 def describe_tracks(mus):
     """Returns a dictionary of characteristics of each track of a music object from a single file"""
@@ -108,6 +120,7 @@ def balance_new_tracks(mus):
         return np.array(n_new)
     n_new = get_n_new()
     
+    inst_max=2
     if np.any(np.array(n_new)>inst_max):
         t_info = pd.DataFrame(describe_tracks(mus))
         def update_t():

@@ -1,3 +1,11 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+# ------ Copyright (C) 2021 University of Strathclyde and Author ------
+# ---------------------- Author: Callum Wilson ------------------------
+# --------------- e-mail: callum.j.wilson@strath.ac.uk ----------------
+"""Functions implementing the new scottish metrics"""
+
 import numpy as np
 import os
 from tqdm import tqdm, trange
@@ -14,6 +22,7 @@ for _ in range(11):
     pent_scales.append(pentatonic.copy())
 
 def dotted_rhythms_8track(mus_proll):
+    """Dotted rhythm metric applied to 8 track pianoroll"""
     mus_proll = mus_proll.reshape(-1,84,8)
     n_beat = int(mus_proll.shape[0]/24)
     dot_beats = np.zeros(n_beat).astype(bool)
@@ -31,6 +40,7 @@ def dotted_rhythms_8track(mus_proll):
     return float(len(dot_beats[dot_beats]))/float(len(dot_beats))
 
 def pent_notes_8track(mus_proll):
+    """Pentatonic metric applied to 8 track pianoroll"""
     mus_proll = mus_proll.reshape(-1,4,96,84,8)
     mus_tracks = mus_proll[:,:,:,:,1:]
 
@@ -51,53 +61,3 @@ def pent_notes_8track(mus_proll):
         all_count_props.append(sum_note)
         
     return float(np.sum(np.array(all_pent_props)*np.array(all_count_props)))/float(np.sum(all_count_props))
-
-def props_from_samples(s_path):
-    n_file = len(os.listdir(s_path))
-    all_f = os.scandir(s_path)
-    
-    track_inst, track_convert = f_track_converter()
-    step_list = []
-    dot_list = []
-    pent_list = []
-    for f in tqdm(all_f, total=n_file):
-        
-        if not f.name.endswith('round.mid'):
-            continue
-            
-        mus_in = muspy.read_midi(s_path+f.name)
-        mus_in = mus_in.adjust_resolution(target=24)
-        
-        try:
-            track_pos = [track_convert[t.program] for t in mus_in]
-        except KeyError:
-            pdb.set_trace()
-        step_list.append(int(f.name[:-15]))
-        mus_proll = mus_to_8track_array(mus_in,track_pos)
-        
-        dot_list.append(dotted_rhythms_8track(mus_proll))
-        pent_list.append(pent_notes_8track(mus_proll))
-        
-        i_sort = np.argsort(step_list)
-
-    return np.array(step_list)[i_sort], np.array(pent_list)[i_sort], np.array(dot_list)[i_sort]
-
-sub_transfer = 5470
-if __name__=='__main__':
-    s_path = 'samples-test/samples/'
-   
-    step_list, pent_list, dot_list = props_from_samples(s_path)
-    
-    fig1 = plt.figure()
-    plt.plot(step_list,dot_list)
-    plt.title('Dot rhythms')
-    plt.xlim((0,np.max(step_list)+500))
-    plt.ylim((0,1))
-    
-    fig2 = plt.figure()
-    plt.plot(step_list,pent_list)
-    plt.title('Pent notes')
-    plt.xlim((0,np.max(step_list)+500))
-    plt.ylim((0,1))
-    
-    plt.show()
