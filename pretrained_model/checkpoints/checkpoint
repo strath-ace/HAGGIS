@@ -1,6 +1,0 @@
-model_checkpoint_path: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-55470"
-all_model_checkpoint_paths: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-44794"
-all_model_checkpoint_paths: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-47463"
-all_model_checkpoint_paths: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-50132"
-all_model_checkpoint_paths: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-52801"
-all_model_checkpoint_paths: "/content/gdrive/My Drive/GAN_test/bmusegan-master/exp/lastfm_alternative_pretrain_g_proposed_d_proposed/checkpoints/GAN.model-55470"
